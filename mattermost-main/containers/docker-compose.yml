@@ -1,0 +1,95 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=mmuser_password
+      - POSTGRES_USER=mmuser
+      - POSTGRES_DB=mattermost
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks: 
+      - mattermost-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+        PGADMIN_DEFAULT_PASSWORD: password
+        PGADMIN_LISTEN_PORT: 80
+    ports:
+        - 15432:80
+    volumes:
+        - pgadmin:/var/lib/pgadmin
+    depends_on:
+        - db
+    networks: 
+      - mattermost-net  
+
+  mattermost:
+    build:
+      context: app
+      args:
+       - edition=team
+       - MM_VERSION=5.35.1
+    restart: unless-stopped
+    container_name: mattermost
+    volumes:
+      - mattermost-config:/mattermost/config:rw
+      - mattermost-data:/mattermost/data:rw
+      - mattermost-logs:/mattermost/logs:rw
+      - mattermost-plugins:/mattermost/plugins:rw
+      - mattermost-client-plugins:/mattermost/client/plugins:rw
+    environment:
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD=mmuser_password
+      - MM_DBNAME=mattermost
+      - MM_SQLSETTINGS_DATASOURCE=postgres://mmuser:mmuser_password@db:5432/mattermost?sslmode=disable&connect_timeout=10
+      #- MM_CONFIG=/mattermost/config/config.json
+    networks: 
+      - mattermost-net
+
+
+  matterbridge:
+    build:
+      context: matterbridge
+      args:
+        - VERSION=1.22.1
+    restart: unless-stopped
+    container_name: matterbridge
+    volumes:
+      - ./matterbridge/config/matterbridge.toml:/matterbridge/config/matterbridge.toml
+    networks: 
+      - mattermost-net
+      
+  web:
+    build: web
+    ports:
+      - "8080:80"
+      - "8443:443"
+    read_only: true
+    restart: unless-stopped
+    environment: 
+      - APP_HOST=mattermost
+    volumes:
+      # This directory must have cert files if you want to enable SSL
+      - web:/cert:ro
+    networks: 
+      - mattermost-net
+
+volumes:
+  db-data:
+  pgadmin:
+  mattermost-config:
+  mattermost-data:
+  mattermost-logs:
+  mattermost-plugins:
+  mattermost-client-plugins:
+  matterbridge-config:
+  web:
+
+networks:
+  mattermost-net:

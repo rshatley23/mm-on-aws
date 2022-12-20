@@ -1,0 +1,42 @@
+[
+    {
+        "ParameterKey": "Route53ZoneName",
+        "ParameterValue": "rrstesting.com"
+    },
+    {
+        "ParameterKey": "HostedZoneId",
+        "ParameterValue": "Z05430112XDVSUVX3B9PZ"
+    },
+    {
+        "ParameterKey": "FQDomain",
+        "ParameterValue": "chat.rrstesting.com"
+    },
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "mattermost-app"
+    },
+    {
+        "ParameterKey": "S3BucketCFNTemplates",
+        "ParameterValue": "srcinfadmin-bucket"
+    },
+    {
+        "ParameterKey": "SSHKeyPair",
+        "ParameterValue": "mmtestkeypair"
+    },
+    {
+        "ParameterKey": "ContainerRegistry",
+        "ParameterValue": "apps-rrs-container-registry"
+    },
+    {
+        "ParameterKey": "BackupPolicyParam",
+        "ParameterValue": "ENABLED"
+    },
+    {
+        "ParameterKey": "RetentionDays",
+        "ParameterValue": "7"
+    },
+    {
+        "ParameterKey": "EFSLifecyclePolicy",
+        "ParameterValue": "AFTER_30_DAYS"
+    }
+]
